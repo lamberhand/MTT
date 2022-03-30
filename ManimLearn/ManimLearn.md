@@ -94,7 +94,7 @@ z - zoom	s - pan	d - 3d view	r - reset camera position	q - stop interaction and 
 
 `--resolution RESOLUTION` Resolution, passed as “WxH”, e.g. “1920x1080”
 
-$ ` manimgl start.py AnimatingMethods -w --file_name 2kVersion --resolution "2560x1440" --frame_rate 120`
+$ ` manimgl start.py AnimatingMethods -w --file_name FILENAME --resolution "2560x1440" --frame_rate 120`
 
 
 
