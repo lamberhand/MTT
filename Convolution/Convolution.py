@@ -16,9 +16,10 @@ class VerticalMultiplication(Scene):
         )
 
         # put everything into place
+        factor1_digits = [2, 2, 3, 1, 6]
         factor1 = VGroup(*[
-            Tex(digit)
-            for digit in ['2', '2', '3', '1', '6']
+            Tex(str(digit))
+            for digit in factor1_digits
         ])
         x = -1
         for digit in factor1:
@@ -28,9 +29,10 @@ class VerticalMultiplication(Scene):
         times = Tex('\\times')
         times.move_to(axes1.c2p(-3, 1.5))
 
+        factor2_digits = [4, 2, 1]
         factor2 = VGroup(*[
-            Tex(digit)
-            for digit in ['4', '2', '1']
+            Tex(str(digit))
+            for digit in factor2_digits
         ])
         x = 1
         for digit in factor2:
@@ -202,29 +204,73 @@ class VerticalMultiplication(Scene):
 
 
         tria0 = always_redraw(
-            lambda: Polygon(*[factor1[0].get_center(), line_intersection([factor1[0].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[0].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#EEEEEE', fill_opacity=compute_opacity(factor1[0])-0.2, stroke_opacity=0)
+            lambda: Polygon(*[factor1[0].get_center(), line_intersection([factor1[0].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[0].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#CCCCCC', fill_opacity=compute_opacity(factor1[0]) / 2 - 0.1, stroke_opacity=0)
         )
 
         tria1 = always_redraw(
-            lambda: Polygon(*[factor1[1].get_center(), line_intersection([factor1[1].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[1].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#EEEEEE', fill_opacity=compute_opacity(factor1[1])-0.2, stroke_opacity=0)
+            lambda: Polygon(*[factor1[1].get_center(), line_intersection([factor1[1].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[1].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#CCCCCC', fill_opacity=compute_opacity(factor1[1]) / 2 - 0.1, stroke_opacity=0)
         )
 
         tria2 = always_redraw(
-            lambda: Polygon(*[factor1[2].get_center(), line_intersection([factor1[2].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[2].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#EEEEEE', fill_opacity=compute_opacity(factor1[2])-0.2, stroke_opacity=0)
+            lambda: Polygon(*[factor1[2].get_center(), line_intersection([factor1[2].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[2].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#CCCCCC', fill_opacity=compute_opacity(factor1[2]) / 2 - 0.1, stroke_opacity=0)
         )
 
         tria3 = always_redraw(
-            lambda: Polygon(*[factor1[3].get_center(), line_intersection([factor1[3].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[3].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#EEEEEE', fill_opacity=compute_opacity(factor1[3])-0.2, stroke_opacity=0)
+            lambda: Polygon(*[factor1[3].get_center(), line_intersection([factor1[3].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[3].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#CCCCCC', fill_opacity=compute_opacity(factor1[3]) / 2 - 0.1, stroke_opacity=0)
         )
 
         tria4 = always_redraw(
-            lambda: Polygon(*[factor1[4].get_center(), line_intersection([factor1[4].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[4].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#EEEEEE', fill_opacity=compute_opacity(factor1[4])-0.2, stroke_opacity=0)
+            lambda: Polygon(*[factor1[4].get_center(), line_intersection([factor1[4].get_center(), factor2.get_left()], [b_edge.get_start(), b_edge.get_end()]), line_intersection([factor1[4].get_center(), factor2.get_right()], [b_edge.get_start(), b_edge.get_end()])], fill_color='#CCCCCC', fill_opacity=compute_opacity(factor1[4]) / 2 - 0.1, stroke_opacity=0)
         )
         
         trias = VGroup(*[tria0, tria1, tria2, tria3, tria4])
-        self.play(GrowFromPoint(trias, factor1[4].get_center()))
 
         
+
+        class factorTex(Tex):
+            def __init__(self, index1, index2, *tex_strings, **kwargs):
+                self.index_of_factor1 = index1
+                self.index_of_factor2 = index2
+                super().__init__(*tex_strings, **kwargs)
+            
+            def get_index1(self):
+                return self.index_of_factor1
+            
+            def get_index2(self):
+                return self.index_of_factor2
+
+
+        projection = VGroup(
+            *[
+                factorTex(i, j, str(factor1_digits[i] * factor2_digits[j]))
+                for j in range(3)
+                for i in range(5)
+            ]
+        )
+
+        projection_surface = h_line1.copy()
+        projection_surface.move_to(axes1.c2p(0, 0.5))
+
+        def projection_follow(projection):
+            for digit in projection:
+                index1 = digit.get_index1()
+                index2 = digit.get_index2()
+                alpha = compute_opacity(factor1[index1])
+                projection_end = line_intersection([factor1[index1].get_center(), factor2[index2].get_center()], [projection_surface.get_start(), projection_surface.get_end()])
+                digit.move_to(projection_end)
+                digit.set_opacity(alpha / 0.8 - 0.25)
+
+        projection.add_updater(projection_follow)
+
+
+        self.play(
+            GrowFromPoint(trias, factor1[4].get_center()), 
+            run_time=3
+            )
+        self.wait()
+        self.add(projection)
+
+
         self.play(factor2.animate.shift(axes1.c2p(-4, 0, 0)), rate_func=there_and_back, run_time=4)
 
 
