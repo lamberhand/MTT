@@ -133,7 +133,7 @@ class VerticalMultiplication(Scene):
         
     
 
-        # emphasize digit by opcaticy
+        # emphasize digit by opacity
 
         def compute_opacity(digit):
             dist = abs(digit.get_x() - factor2[2].get_x())
@@ -145,17 +145,19 @@ class VerticalMultiplication(Scene):
                 else:
                     return 1.48 - dist * 8 / 5
 
-        def set_opacity(digits):
+
+        def set_digit_opacity(digits):
             for digit in digits:
                 digit.set_opacity(compute_opacity(digit))
 
-        self.play(
-            *[
-                factor1[i].animate.set_opacity(compute_opacity(factor1[i]))
-                for i in range(5)
-            ]
-        )
-        factor1.add_updater(set_opacity)
+        # self.play(
+        #     *[
+        #         factor1[i].animate.set_opacity(compute_opacity(factor1[i]))
+        #         for i in range(5)
+        #     ]
+        # )   # TODO if animate.set_opacity called, set_opacity in updaters will not work
+        
+        factor1.add_updater(set_digit_opacity) 
 
 
         # generate projective triangles
@@ -314,6 +316,19 @@ class VerticalMultiplication(Scene):
 
 
 
+
+
+
+
+
+# class UpdaterTest(Scene):
+#     def construct(self):
+#         a = Tex('a')
+#         self.add(a)
+#         a.set_opacity(0.8)
+#         self.play(a.animate.set_opacity(0.2))
+#         now = self.time
+#         a.add_updater(lambda m: m.set_opacity(abs(math.cos(self.time - now))))
 
 
 
