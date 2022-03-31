@@ -129,9 +129,14 @@ class VerticalMultiplication(Scene):
 
         # put in another way
 
-        self.play(FadeOut(VGroup(interm1, interm2, interm3, h_line2, result)))
+        self.play(
+            FadeOut(VGroup(interm1, interm2, interm3, h_line2, result)),
+            factor1.animate.shift(axes1.c2p(0, -1)),
+            factor2.animate.shift(axes1.c2p(0, -1)),
+            times.animate.shift(axes1.c2p(0, -1)),
+            h_line1.animate.shift(axes1.c2p(0, -1))
+            )
         
-    
 
         # emphasize digit by opacity
 
@@ -150,14 +155,21 @@ class VerticalMultiplication(Scene):
             for digit in digits:
                 digit.set_opacity(compute_opacity(digit))
 
-        # self.play(
-        #     *[
-        #         factor1[i].animate.set_opacity(compute_opacity(factor1[i]))
-        #         for i in range(5)
-        #     ]
-        # )   # TODO if animate.set_opacity called, set_opacity in updaters will not work
-        
+        self.play(
+            *[
+                factor1[i].animate.set_opacity(compute_opacity(factor1[i]))
+                for i in range(5)
+            ]
+        )   
+
+        # if animate.set_opacity called, set_opacity in updaters will not work
+        # hence using duplicate
+        factor1_old = factor1
+        factor1 = factor1.copy()
         factor1.add_updater(set_digit_opacity) 
+        self.add(factor1)
+        self.remove(factor1_old)
+
 
 
         # generate projective triangles
@@ -201,7 +213,7 @@ class VerticalMultiplication(Scene):
         # r_edges.add_updater(lambda m: edges_follow(m, side='right'))
 
         b_edge = h_line1.copy()
-        b_edge.move_to(axes1.c2p(0, 0))
+        b_edge.move_to(axes1.c2p(0, -1))
         # self.add(b_edge)
 
 
@@ -245,13 +257,13 @@ class VerticalMultiplication(Scene):
         projection = VGroup(
             *[
                 factorTex(i, j, str(factor1_digits[i] * factor2_digits[j]))
-                for j in range(3)
                 for i in range(5)
+                for j in range(3)
             ]
         )
 
         projection_surface = h_line1.copy()
-        projection_surface.move_to(axes1.c2p(0, 0.5))
+        projection_surface.move_to(axes1.c2p(0, -0.5))
 
         def projection_follow(projection):
             for digit in projection:
@@ -262,18 +274,26 @@ class VerticalMultiplication(Scene):
                 digit.move_to(projection_end)
                 digit.set_opacity(alpha / 0.8 - 0.25)
 
-        projection.add_updater(projection_follow)
-
+        
+        # move these three first
+        projection[-1].move_to(line_intersection([factor1[4].get_center(), factor2[2].get_center()], [projection_surface.get_start(), projection_surface.get_end()]))
+        projection[-2].move_to(line_intersection([factor1[4].get_center(), factor2[1].get_center()], [projection_surface.get_start(), projection_surface.get_end()]))
+        projection[-3].move_to(line_intersection([factor1[4].get_center(), factor2[0].get_center()], [projection_surface.get_start(), projection_surface.get_end()]))
 
         self.play(
             GrowFromPoint(trias, factor1[4].get_center()), 
+            FadeInFromPoint(projection[-1], factor1[4].get_center(), lag_ratio=0),
+            FadeInFromPoint(projection[-2], factor1[4].get_center(), lag_ratio=0),
+            FadeInFromPoint(projection[-3], factor1[4].get_center(), lag_ratio=0),
             run_time=3
             )
         self.wait()
+
+        projection.add_updater(projection_follow)
         self.add(projection)
 
 
-        self.play(factor2.animate.shift(axes1.c2p(-4, 0, 0)), rate_func=there_and_back, run_time=4)
+        self.play(factor2.animate.shift(axes1.c2p(-4, 0)), times.animate.shift(axes1.c2p(0, 1)), rate_func=there_and_back, run_time=5)
 
 
         # axes2 = Axes(
