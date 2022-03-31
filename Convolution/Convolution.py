@@ -1,3 +1,4 @@
+from random import triangular
 from re import X
 from manimlib import *
 from sympy import Le, isolate, trigamma
@@ -136,6 +137,7 @@ class VerticalMultiplication(Scene):
             times.animate.shift(axes1.c2p(0, -1)),
             h_line1.animate.shift(axes1.c2p(0, -1))
             )
+        self.remove(interm1, interm2, interm3, h_line2, result)
         
 
         # emphasize digit by opacity
@@ -293,28 +295,34 @@ class VerticalMultiplication(Scene):
         self.add(projection)
 
 
-        self.play(factor2.animate.shift(axes1.c2p(-4, 0)), times.animate.shift(axes1.c2p(0, 1)), rate_func=there_and_back, run_time=5)
+        self.play(factor2.animate.shift(axes1.c2p(-4, 0)), times.animate.shift(axes1.c2p(0, 0.5)), rate_func=there_and_back, run_time=5)
 
 
-        # axes2 = Axes(
-        #     x_range=(-3,3),
-        #     y_range=(-3.5, 3.5),
-        #     width=5,
-        #     height=6
-        # )
+        # start convolution
+
+        axes2 = Axes(
+            x_range=(-3,3),
+            y_range=(-3.5, 3.5),
+            width=5,
+            height=6
+        )
+
+        self.play(FadeOut(VGroup(projection, trias)))
+        # self.remove(projection, trias)
+
         
-        # self.play(
-        #     *[
-        #         factor1[i].animate.move_to(axes2.c2p(i - 1, 3.5))
-        #         for i in range(5)
-        #     ],
-        #     *[
-        #         factor2[i].animate.move_to(axes2.c2p(i + 1, 2.5))
-        #         for i in range(3)
-        #     ],
-        #     times.animate.move_to(axes2.c2p(-3, 2.5)),
-        #     h_line1.animate.move_to(axes2.c2p(0, 2))
-        # )
+        self.play(
+            *[
+                factor1[i].animate.move_to(axes2.c2p(i - 1, 3.5))
+                for i in range(5)
+            ],
+            *[
+                factor2[i].animate.move_to(axes2.c2p(i + 1, 2.5))
+                for i in range(3)
+            ],
+            times.animate.move_to(axes2.c2p(-3, 2.5)),
+            h_line1.animate.move_to(axes2.c2p(0, 2))
+        )
 
 
         
