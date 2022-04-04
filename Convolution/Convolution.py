@@ -176,43 +176,6 @@ class VerticalMultiplication(Scene):
 
         # generate projective triangles
         
-        # def edges_follow(edges, side=None):
-        #     if side is None:
-        #         return
-
-        #     i = 0
-        #     if side == 'left':
-        #         for edge in edges:
-        #             edge.set_points_by_ends(factor1[i].get_center(), factor2.get_left())
-        #             i = i+1
-        #         return
-        #     if side == 'right':
-        #         for edge in edges:
-        #             edge.set_points_by_ends(factor1[i].get_center(), factor2.get_right())
-        #             i = i+1
-        #         return
-
-        # # left edges
-        # l_edges = VGroup(
-        #     *[
-        #         Line(stroke_opacity=0)
-        #         for i in range(5)
-        #     ]
-        # )
-        # self.add(l_edges)
-
-        # l_edges.add_updater(lambda m: edges_follow(m, side='left'))
-       
-        # # right edges
-        # r_edges = VGroup(
-        #     *[
-        #         Line(stroke_opacity=0)
-        #         for i in range(5)
-        #     ]
-        # )
-        # self.add(r_edges)
-
-        # r_edges.add_updater(lambda m: edges_follow(m, side='right'))
 
         b_edge = h_line1.copy()
         b_edge.move_to(axes1.c2p(0, -1))
@@ -263,6 +226,7 @@ class VerticalMultiplication(Scene):
                 for j in range(3)
             ]
         )
+        projection2 = projection.copy()
 
         projection_surface = h_line1.copy()
         projection_surface.move_to(axes1.c2p(0, -0.5))
@@ -308,7 +272,7 @@ class VerticalMultiplication(Scene):
         )
 
         self.play(FadeOut(VGroup(projection, trias)))
-        # self.remove(projection, trias)
+        self.remove(projection, trias)
 
         
         self.play(
@@ -324,39 +288,30 @@ class VerticalMultiplication(Scene):
             h_line1.animate.move_to(axes2.c2p(0, 2))
         )
 
-
+        for digit in projection2:
+            digit.move_to(axes2.c2p(-3 + digit.get_index1() + digit.get_index2(), -2.5 + digit.get_index1()))
         
-
-        # for i in [4, 3, 2, 1, 0]:
-        #     digits = [4, 3, 2, 1, 0]
-        #     digits.remove(i)
-        #     self.play(
-        #         factor1[i].animate.set_opacity(1),
-        #         *[
-        #             factor1[j].animate.set_opacity(0.2)
-        #             for j in digits
-        #         ],
-        #         factor2.animate.shift(axes2.c2p(0 if i==4 else -1, 0, 0))
-        #         )
-        #     self.wait()
-
-    
+        factor1_old = factor1
+        factor1 = factor1.copy()
+        factor1.add_updater(set_digit_opacity)
+        self.add(factor1)
+        self.remove(factor1_old)
 
 
-
-
-
-
-
-
-# class UpdaterTest(Scene):
-#     def construct(self):
-#         a = Tex('a')
-#         self.add(a)
-#         a.set_opacity(0.8)
-#         self.play(a.animate.set_opacity(0.2))
-#         now = self.time
-#         a.add_updater(lambda m: m.set_opacity(abs(math.cos(self.time - now))))
+        for i in range(-1, -6, -1):
+            self.play(
+                *[
+                    ReplacementTransform(factor1[i].copy(), projection2[j + (i + 1) * 3])
+                    for j in range(-1, -4, -1)
+                ]
+            )
+            if i == -4:
+                self.play(factor2.animate.shift(axes2.c2p(-1, 0)), times.animate.shift(axes2.c2p(0, 0.5)))
+            elif i == -5:
+                break
+            else:
+                self.play(factor2.animate.shift(axes2.c2p(-1, 0)))
+            
 
 
 
