@@ -370,34 +370,74 @@ class VerticalMultiplication(Scene):
 
         self.play(*trans_list)
 
-        for i in range(7):
-            result[i].move_to(axes2.c2p(i - 3, -3.5))
+        # merging
+        
+        finale = [
+            Tex("8"),
+            Tex("1", "2"),
+            Tex("1", "8"),
+            Tex("1", "2"),
+            Tex("2", "9"),
+            Tex("1", "3"),
+            Tex("6")
+        ]
 
-        merging_list = []
-        for i in range(-1, -7, -1):
-            if i == -1:
-                merging_list.append(TransformMatchingShapes(final[i].copy(), result[i-1], path_arc=-90 * DEGREES))
-                continue
-            if i == -6:
-                merging_list.append(TransformMatchingShapes(final[i], result[i-1], path_arc=-90 * DEGREES))
-                merging_list.append(FadeOut(final[0]))
-                continue
-            merging_list.append(TransformMatchingShapes(final[i], result[i-1], path_arc=-90 * DEGREES))
-        self.play(*merging_list)
+        for i in range(7):
+            finale[i].move_to(axes2.c2p(i - 3, -3.5))
+        
+        for digit in finale:
+            self.add(digit)
+        self.remove(final)
+        # self.play(TransformMatchingTex(finale[5].submobjects[0].copy(), finale[4], run_time=5))
+
+        class positionedTex(Tex):
+            def __init__(self, position=None, *tex_strings, **kwargs):
+                super().__init__(*tex_strings, **kwargs)
+                if position is not None:
+                    self.move_to(position)
+
+        # self.embed()
         
 
+        temp = positionedTex(axes2.c2p(1, -3.5), "3", "0")
+        self.play(
+            FadeOut(finale[5].submobjects[0], axes2.c2p(-1, 0, 0), scale=0.5, path_arc=-90 * DEGREES), # tens merge to left
+            finale[5].submobjects[1].animate.move_to(axes2.c2p(2, -3.5)), # units become king
+            TransformMatchingTex(finale[4], temp) # left digit accept tens
+            )
+        finale[4] = temp
+        
+        temp = positionedTex(axes2.c2p(0, -3.5), "1", "5")
+        self.play(
+            FadeOut(finale[4].submobjects[0], axes2.c2p(-1, 0, 0), scale=0.5, path_arc=-90 * DEGREES),
+            finale[4].submobjects[1].animate.move_to(axes2.c2p(1, -3.5)), 
+            TransformMatchingTex(finale[3], temp)
+        )
+        finale[3] = temp
 
+        temp = positionedTex(axes2.c2p(-1, -3.5), "1", "9")
+        self.play(
+            FadeOut(finale[3].submobjects[0], axes2.c2p(-1, 0, 0), scale=0.5, path_arc=-90 * DEGREES),
+            finale[3].submobjects[1].animate.move_to(axes2.c2p(0, -3.5)), 
+            TransformMatchingTex(finale[2], temp)
+        )
+        finale[2] = temp
 
+        temp = positionedTex(axes2.c2p(-2, -3.5), "1", "3")
+        self.play(
+            FadeOut(finale[2].submobjects[0], axes2.c2p(-1, 0, 0), scale=0.5, path_arc=-90 * DEGREES),
+            finale[2].submobjects[1].animate.move_to(axes2.c2p(-1, -3.5)), 
+            TransformMatchingTex(finale[1], temp)
+        )
+        finale[1] = temp
 
-# self.play(TransformMatchingShapes(b.copy(), a, run_time=5, path_arc=-90*DEGREES))
+        self.play(
+            FadeOut(finale[1].submobjects[0], axes2.c2p(-1, 0, 0), scale=0.5, path_arc=-90 * DEGREES),
+            finale[1].submobjects[1].animate.move_to(axes2.c2p(-2, -3.5)), 
+            TransformMatchingTex(finale[0], positionedTex(axes2.c2p(-3, -3.5), "9"))
+        )
 
-
-
-
-
-
-
-
-
+        
+        
 
 
