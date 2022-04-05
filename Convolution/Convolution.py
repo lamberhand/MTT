@@ -210,6 +210,7 @@ class VerticalMultiplication(Scene):
             def __init__(self, index1, index2, *tex_strings, **kwargs):
                 self.index_of_factor1 = index1
                 self.index_of_factor2 = index2
+                self.string = tex_strings[0]
                 super().__init__(*tex_strings, **kwargs)
             
             def get_index1(self):
@@ -217,6 +218,9 @@ class VerticalMultiplication(Scene):
             
             def get_index2(self):
                 return self.index_of_factor2
+            
+            def get_number(self):
+                return int(self.string)
 
 
         projection = VGroup(
@@ -311,7 +315,38 @@ class VerticalMultiplication(Scene):
                 break
             else:
                 self.play(factor2.animate.shift(axes2.c2p(-1, 0)))
-            
+
+        
+        h_line2 = Line()
+        h_line2.set_length(6)
+        h_line2.move_to(axes2.c2p(0, -3))
+
+        factor1.remove_updater(set_digit_opacity)
+        self.play(
+            Write(h_line2, run_time=0.6), 
+            factor2.animate.shift(axes2.c2p(4, 0)), 
+            times.animate.shift(axes2.c2p(0, -0.5)), 
+            *[
+                digit.animate.set_opacity(1)
+                for digit in factor1
+            ]
+            )
+        
+        
+        correspond = [[0], [1, 3], [2, 4, 6], [5, 7, 9], [8, 10, 12], [11, 13], [14]]
+        final = VGroup()
+        for l in correspond:
+            sum = 0
+            for i in l:
+                sum += projection2[i].get_number()
+            final.add(Tex(str(sum)))
+        
+        
+        for i in range(7):
+            final[i].move_to(axes2.c2p(i - 3, -3.5))
+
+        self.add(final)
+
 
 
 
