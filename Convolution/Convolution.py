@@ -1,5 +1,5 @@
 from random import triangular
-from re import X
+from re import L, X
 from manimlib import *
 from sympy import Le, isolate, trigamma
 
@@ -250,7 +250,7 @@ class VerticalMultiplication(Scene):
         projection[-2].move_to(line_intersection([factor1[4].get_center(), factor2[1].get_center()], [projection_surface.get_start(), projection_surface.get_end()]))
         projection[-3].move_to(line_intersection([factor1[4].get_center(), factor2[0].get_center()], [projection_surface.get_start(), projection_surface.get_end()]))
 
-        self.play(
+        self.play(  # TODO causal relationship
             GrowFromPoint(trias, factor1[4].get_center()), 
             FadeInFromPoint(projection[-1], factor1[4].get_center(), lag_ratio=0),
             FadeInFromPoint(projection[-2], factor1[4].get_center(), lag_ratio=0),
@@ -345,10 +345,51 @@ class VerticalMultiplication(Scene):
         for i in range(7):
             final[i].move_to(axes2.c2p(i - 3, -3.5))
 
-        self.add(final)
+
+        def compute_lag(index):
+            storey = int(index / 3)
+            if storey == 0:     # match syntax is avalable in python 3.10
+                return 0.95
+            elif storey == 1:
+                return 0.8
+            elif storey == 2:
+                return 0.3
+            elif storey == 3:
+                return 0.2
+            elif storey == 4:
+                return 0
+            else:
+                return 0
 
 
 
+        trans_list = []
+        for l in range(7):
+            for i in correspond[l]:
+                trans_list.append(ReplacementTransform(projection2[i].copy(), final[l], run_time=2, lag_ratio=0))
+
+        self.play(*trans_list)
+
+        for i in range(7):
+            result[i].move_to(axes2.c2p(i - 3, -3.5))
+
+        merging_list = []
+        for i in range(-1, -7, -1):
+            if i == -1:
+                merging_list.append(TransformMatchingShapes(final[i].copy(), result[i-1], path_arc=-90 * DEGREES))
+                continue
+            if i == -6:
+                merging_list.append(TransformMatchingShapes(final[i], result[i-1], path_arc=-90 * DEGREES))
+                merging_list.append(FadeOut(final[0]))
+                continue
+            merging_list.append(TransformMatchingShapes(final[i], result[i-1], path_arc=-90 * DEGREES))
+        self.play(*merging_list)
+        
+
+
+
+
+# self.play(TransformMatchingShapes(b.copy(), a, run_time=5, path_arc=-90*DEGREES))
 
 
 
