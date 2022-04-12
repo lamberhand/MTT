@@ -54,7 +54,7 @@ $$
 
 
 
-
+By convolving the signal sequence with the impulse response of the system, we get the consequence
 
 
 

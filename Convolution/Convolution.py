@@ -1,3 +1,4 @@
+from ctypes import cast
 from random import triangular
 from re import L, X
 from manimlib import *
@@ -8,6 +9,10 @@ from sympy import Le, isolate, trigamma
 class VerticalMultiplication(Scene):
     def construct(self):
         
+        greetings = Text("Vertical Multiplication")
+        self.play(Write(greetings), run_time=2.5)
+        self.wait()
+        self.play(FadeOut(greetings))
 
         axes1 = Axes(
             x_range=(-3,3),
@@ -348,25 +353,12 @@ class VerticalMultiplication(Scene):
 
         def compute_lag(index):
             storey = int(index / 3)
-            if storey == 0:     # match syntax is avalable in python 3.10
-                return 0.95
-            elif storey == 1:
-                return 0.8
-            elif storey == 2:
-                return 0.3
-            elif storey == 3:
-                return 0.2
-            elif storey == 4:
-                return 0
-            else:
-                return 0
-
-
+            return 1 - 0.2 * storey
 
         trans_list = []
         for l in range(7):
             for i in correspond[l]:
-                trans_list.append(ReplacementTransform(projection2[i].copy(), final[l], run_time=2, lag_ratio=0))
+                trans_list.append(ReplacementTransform(projection2[i].copy(), final[l], run_time=2, lag_ratio=compute_lag(i), rate_func=linear))
 
         self.play(*trans_list)
 
@@ -396,9 +388,9 @@ class VerticalMultiplication(Scene):
                 if position is not None:
                     self.move_to(position)
 
-        # self.embed()
+        self.wait(2)
         
-
+        # TODO try Text
         temp = positionedTex(axes2.c2p(1, -3.5), "3", "0")
         self.play(
             FadeOut(finale[5].submobjects[0], axes2.c2p(-1, 0, 0), scale=0.5, path_arc=-90 * DEGREES), # tens merge to left
@@ -439,5 +431,92 @@ class VerticalMultiplication(Scene):
 
         
         
+class ConvolutionalSum(Scene):
+    def construct(self):
+        
+        greetings = VGroup(Text("Convolutional"), Text(" Sum")).arrange(RIGHT)
+        equation = Tex("\sum_{k=-\infty}^{\infty}", " x[k]y[n-k]")
+        self.play(Write(greetings), run_time=2.5)
+        self.wait()
+
+        self.play(
+            TransformMatchingShapes(greetings[0], equation[1]), 
+            TransformMatchingShapes(greetings[1], equation[0]), 
+            run_time=2.5
+            )
+        
+        axes1 = Axes(
+            x_range=(-1, 5),
+            y_range=(0, 1.2),
+            height=3,
+            width=12,
+            axis_config={
+                "stroke_color": GREY_A,
+                "stroke_width": 2,
+                "include_ticks": False
+            },
+        )
+        axes1.get_y_axis().set_opacity(0)
+        
+
+        axes2 = Axes(
+            x_range=(-1, 3),
+            y_range=(0, 1.2),
+            height=2,
+            width=8,
+            axis_config={
+                "stroke_color": GREY_A,
+                "stroke_width": 2,
+                "include_ticks": False
+            },
+        )
+        axes2.get_y_axis().set_opacity(0)
+        
+
+        self.play(Write(axes1), Write(axes2))
+        self.play(VGroup(equation, axes1, axes2).animate.arrange(DOWN))
+
+        signal = [0.2, 0.2, 0.3, 0.1, 0.6]
+        ir = [1.0, 0.5, 0.25]
+        
+        xn = [
+            Line(axes1.c2p(i, 0), axes1.c2p(i , signal[i]))
+            for i in range(5)
+        ]
+        x_marks = [
+            Tex(str(signal[i]), font_size=28).move_to(axes1.c2p(i, signal[i] + 0.1))
+            for i in range(5)
+        ]
+        yn = [
+            Line(axes2.c2p(i, 0), axes2.c2p(i, ir[i]))
+            for i in range(3)
+        ]
+        y_marks = [
+            Tex(str(ir[i]), font_size=28).move_to(axes2.c2p(i, ir[i] + 0.1))
+            for i in range(3)
+        ]
+        # TODO write value and label
+        for x in xn:
+            self.add(x)
+            axes1.add(x)
+        for x_mark in x_marks:
+            self.add(x_mark)
+            axes1.add(x_mark)
+        for y in yn:
+            self.add(y)
+            axes2.add(y)
+        for y_mark in y_marks:
+            self.add(y_mark)
+            axes2.add(y_mark)
+
+        signal_label = Tex("x[n]").move_to(axes1.c2p(5, 0.5))
+        axes1.add(signal_label)
+        ir_label = Tex("y[n]").move_to(axes2.c2p(3, 0.5))
+        axes2.add(ir_label)
+
+        # start convolution
+
+
+
 
 
